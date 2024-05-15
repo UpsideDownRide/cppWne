@@ -17,7 +17,6 @@ private:
     HuffmanNode *root;
     std::unordered_map<char, size_t> frequencyMap;
     std::unordered_map<char, uint8_t> codes;
-    friend std::ostream& operator<<(std::ostream &os, const Huffman &huffman);
     std::ostream& encode(const std::string &input, std::ostream &output);
     void printCodes(std::unordered_map<char, uint8_t> codes);
     HuffmanNode *buildTree(std::unordered_map<char, size_t> frequencyMap);
@@ -27,7 +26,7 @@ private:
 public:
     Huffman(std::string toEncode);
     std::ostream& encode(std::ostream &output);
-    void decode(const std::string &input, std::ostream &output);
+    std::ostream& decode(const std::string &input, std::ostream &output);
 };
 
 #endif // HUFFMAN_H 

@@ -1,6 +1,5 @@
 
 #include "huffman.h"
-
 Huffman::Huffman(std::string toEncode) {
     this -> toEncode = toEncode;
     std::cout << "initializing frequency map..." << std::endl; 
@@ -10,10 +9,9 @@ Huffman::Huffman(std::string toEncode) {
     }
 
     std::cout << "building tree..." << std::endl;
-    HuffmanNode *root = buildTree(frequencyMap);
+    this->root = buildTree(frequencyMap);
     std::cout << "generating codes..." << std::endl;
     generateCodes(root, 0);
-    
     std::cout << "printing codes..." << std::endl;
     printCodes(codes);
 }
@@ -90,7 +88,7 @@ std::ostream& Huffman::encode(const std::string &input, std::ostream &output) {
     return output;
 }
 
-void Huffman::decode(const std::string &input, std::ostream &output) {
+std::ostream &Huffman::decode(const std::string &input, std::ostream &output) {
     HuffmanNode *current = root;
     auto reverseCodes = std::unordered_map<uint8_t, char>();
     std::cout << "decoding..." << std::endl;
@@ -98,11 +96,7 @@ void Huffman::decode(const std::string &input, std::ostream &output) {
         reverseCodes[pair.second] = pair.first;
     }
     for (auto byte : input) {
-        std::cout << "byte: " << byte << std::endl;
         for (int i = 7; i >= 0; i--) {
-            std::cout << (current -> code) << std::endl;
-            std::cout << "left: " << (current -> left) << std::endl;
-            std::cout << "right: " << (current -> right) << std::endl;
             if ((current -> left) == nullptr) {
                 std::cout << reverseCodes[current -> code];
                 output << reverseCodes[current -> code];
@@ -117,6 +111,7 @@ void Huffman::decode(const std::string &input, std::ostream &output) {
 
         }
     }
+    return output;
 }
 
 std::ostream &Huffman::encode(std::ostream &output) {

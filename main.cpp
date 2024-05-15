@@ -9,9 +9,9 @@ int main() {
     std::cout << "test string: " << test << std::endl;
     std::cout << "Initializing Huffman object..." << std::endl;
     Huffman huffman = Huffman(test);
-    huffman.encode(std::cout);
-    std::ostringstream oss;
-    huffman.encode(oss);
-    huffman.decode(oss.str(), std::cout);
+    //huffman.encode(std::cout);
+    std::stringstream ss;
+    huffman.encode(ss);
+    huffman.decode(ss.str(), std::cout);
     return 0;
 }
