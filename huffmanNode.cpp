@@ -1,13 +1,14 @@
 #include "huffmanNode.h"
 
-HuffmanNode::HuffmanNode(char character, size_t frequency) {
-    this -> character = character;
+HuffmanNode::HuffmanNode(uint8_t code, size_t frequency) {
+    this -> code = code;
     this -> frequency = frequency;
-    left = right = nullptr;
+    this -> left = nullptr;
+    this -> right = nullptr;
 }
 
-HuffmanNode::HuffmanNode(char character, size_t frequency, HuffmanNode *left, HuffmanNode *right) {
-    this -> character = character;
+HuffmanNode::HuffmanNode(uint8_t code, size_t frequency, HuffmanNode *left, HuffmanNode *right) {
+    this -> code = code;
     this -> frequency = frequency;
     this -> left = left;
     this -> right = right;
@@ -19,7 +20,7 @@ HuffmanNode::~HuffmanNode() {
 }
     
 std::ostream& operator<<(std::ostream &os, const HuffmanNode &node) {
-    os << node.character << ":" << node.frequency;
+    os << node.code << ":" << node.frequency;
     return os;
 }
 

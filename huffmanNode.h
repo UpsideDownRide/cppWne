@@ -2,16 +2,16 @@
 #define HUFFMANNODE_H
 
 #include <iostream>
+#include <cstdint>
 
-class HuffmanNode {
-public:
-    char character;
+struct HuffmanNode {
+    uint8_t code;
     size_t frequency;
     HuffmanNode* left;
     HuffmanNode* right;
 
-    HuffmanNode(char data, size_t frequency);
-    HuffmanNode(char character, size_t frequency, HuffmanNode *left, HuffmanNode *right);
+    HuffmanNode(uint8_t code, size_t frequency);
+    HuffmanNode(uint8_t code, size_t frequency, HuffmanNode *left, HuffmanNode *right);
     ~HuffmanNode();
 };
 
