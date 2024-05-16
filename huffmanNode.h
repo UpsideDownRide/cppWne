@@ -3,15 +3,16 @@
 
 #include <iostream>
 #include <cstdint>
+#include <iterator>
 
 struct HuffmanNode {
-    uint8_t code;
+    char character;
     size_t frequency;
     HuffmanNode* left;
     HuffmanNode* right;
 
-    HuffmanNode(uint8_t code, size_t frequency);
-    HuffmanNode(uint8_t code, size_t frequency, HuffmanNode *left, HuffmanNode *right);
+    HuffmanNode(char character, size_t frequency);
+    HuffmanNode(char character, size_t frequency, HuffmanNode *left, HuffmanNode *right);
     ~HuffmanNode();
 };
 
