@@ -10,11 +10,7 @@
 #include <bitset>
 #include <cmath>
 #include "huffmanDecoder.h"
-
-struct CodeWithLength {
-    uint8_t code;
-    size_t bitlength;
-};
+#include "fileHeader.h"
 
 class HuffmanEncoder {
 private:
@@ -22,14 +18,14 @@ private:
     std::string encoded;
     HuffmanNode *root;
     std::unordered_map<char, size_t> frequencyMap;
-    std::unordered_map<char, CodeWithLength> codes;
+    std::unordered_map<char, std::string> codes;
     
-    void encode(const std::string &input, std::ostream &output);
-    void printCodes(std::unordered_map<char, CodeWithLength> codes);
+    void _encode(const std::string &input, std::ostream &output);
+    void printCodes(std::unordered_map<char, std::string> codes);
     HuffmanNode *buildTree(std::unordered_map<char, size_t> frequencyMap);
     void buildFrequencyMap(std::string text);
-    void generateCodes(HuffmanNode *root);
-    void generateCodes(HuffmanNode *root, uint8_t code);
+    void generateCodes(HuffmanNode *root, std::string code);
+    size_t getEncodingLength();
 
 public:
     HuffmanEncoder(std::string toEncode);

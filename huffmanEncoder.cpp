@@ -3,14 +3,9 @@
 
 HuffmanEncoder::HuffmanEncoder(std::string toEncode) {
     this -> toEncode = toEncode;
-    std::cout << "initializing frequency map..." << std::endl; 
     buildFrequencyMap(toEncode);
-    std::cout << "building tree..." << std::endl;
     this->root = buildTree(frequencyMap);
-    std::cout << "generating codes..." << std::endl;
-    generateCodes(root);
-    std::cout << "printing codes..." << std::endl;
-    printCodes(codes);
+    generateCodes(root, "");
 }
 
 void HuffmanEncoder::buildFrequencyMap(std::string text) {
@@ -36,87 +31,75 @@ HuffmanNode *HuffmanEncoder::buildTree(std::unordered_map<char, size_t> frequenc
 
         size_t sum = left -> frequency + right -> frequency;
         HuffmanNode *nodeToAdd = new HuffmanNode('\0', sum, left, right);
-        std::cout << "adding branch " << *nodeToAdd << std::endl;
-        std::cout << "with leaves " << *left << " and " << *right << std::endl;
         priorityQueue.push(nodeToAdd);
     }
 
     return priorityQueue.top();
 }
 
-void HuffmanEncoder::generateCodes(HuffmanNode *current) {
-    if (current == nullptr) {
-        return;
-    }
-    if (root -> left != nullptr) {
-        generateCodes(root -> left, 0);
-    }
-    if (root -> right != nullptr) {
-        generateCodes(root -> right, 1);
-    }
-} 
-
-void HuffmanEncoder::generateCodes(HuffmanNode *current, uint8_t code) {
+void HuffmanEncoder::generateCodes(HuffmanNode *current, std::string code) {
     if (current == nullptr) {
         return;
     }
     
     if (current -> character != '\0') {
-        uint8_t bitlength = std::floor(std::log2(code)) + 1;
-        CodeWithLength codeWithLength = {code, bitlength};
-        codes[current -> character] = codeWithLength;;
+        codes[current -> character] = code;
         return;
     }
 
     if (current -> left != nullptr) {
-        generateCodes(current -> left, code << 1);
+        generateCodes(current -> left, code + "0");
     }
 
     if (current -> right != nullptr) {
-        generateCodes(current -> right, (code << 1) | 1);
+        generateCodes(current -> right, code + "1");
     }
     return;
 }
 
-void HuffmanEncoder::encode(std::ostream &output) {
-    return encode(this -> toEncode, output);
+size_t HuffmanEncoder::getEncodingLength() {
+    size_t length = 0;
+    for (auto pair : this->frequencyMap){
+        length += this->codes[pair.first].length() * pair.second;
+    }
+    std::cout << "computed length: " << length << std::endl;
+    return length;
 }
 
-void HuffmanEncoder::printCodes(std::unordered_map<char, CodeWithLength> codes) {
+std::ostream &operator<<(std::ostream &os, const fileHeader &header) {
+    os.write(reinterpret_cast<const char*>(&header.treeLength), sizeof(header.treeLength));
+    os.write(reinterpret_cast<const char*>(&header.encodingLength), sizeof(header.encodingLength));
+    return os;
+}
+
+void HuffmanEncoder::encode(std::ostream &output) {
+    fileHeader header{0, getEncodingLength()};
+    output << header;
+    _encode(this -> toEncode, output);
+    return;
+}
+
+void HuffmanEncoder::printCodes(std::unordered_map<char, std::string> codes) {
     for (auto pair : codes) {
-        auto bs = std::bitset<8>(pair.second.code);
-        std::string binary;
-        if(bs != 0) {
-            binary = bs.to_string();
-            binary.erase(0, binary.find_first_not_of('0'));
-        } else {
-            binary = "0";
-        }
-        std::cout << pair.first << " " << binary << std::endl;
+        std::cout << pair.first << " " << pair.second << std::endl;
     }
 }
 
-void HuffmanEncoder::encode(const std::string &input, std::ostream &output) {
-    uint8_t code;
-    uint8_t bitlength;
+void HuffmanEncoder::_encode(const std::string &input, std::ostream &output) {
+    std::string code;
     BitWriter bitWriter(output);
+    size_t length = 0;
     for (auto character : input) {
-        std::cout << "encoding " << character << std::endl;
-        code = codes[character].code;
-        bitlength = codes[character].bitlength;
-        if (code == 0) {
-            bitWriter.writeBit(0);
-            continue;
+        code = codes[character];
+        for (auto ch : code) {
+            bitWriter.writeBit(ch == '1');
         }
-        code <<= (8 - bitlength);
-        for (uint8_t i = 0; i < bitlength; i++) {
-            bool bit = (code >> (7 - i)) & 1;
-            bitWriter.writeBit(bit);
-        }
+        length += code.length();
     }
     bitWriter.flush();
     return;
 }
+
 
 void HuffmanEncoder::decode(std::istream &input, std::ostream &output) {
     HuffmanDecoder huffmanDec = HuffmanDecoder(this->root);

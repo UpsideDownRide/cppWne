@@ -3,13 +3,14 @@
 
 #include <iostream>
 #include "huffmanNode.h"
+#include "fileHeader.h"
 
 class HuffmanDecoder {
     private:
         HuffmanNode *root;
         HuffmanNode *current;
     public:
-        HuffmanDecoder(HuffmanNode *root) : root(root) {};
+        HuffmanDecoder(HuffmanNode *root) : root(root), current(nullptr) {};
         void decode(std::istream &input, std::ostream &output);
 };        
 
