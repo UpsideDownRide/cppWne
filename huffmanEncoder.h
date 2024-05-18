@@ -31,7 +31,6 @@ private:
 public:
     HuffmanEncoder(std::string toEncode);
     void encode(std::ostream &output);
-    void decode(std::istream &input,std::ostream &output);
 };
 #endif // HUFFMANENCODER_H 
 
@@ -40,9 +39,9 @@ public:
 
 class BitWriter {
     private:
+        std::ostream &output;
         uint8_t buffer;
         uint8_t index;
-        std::ostream &output;
     public:
         BitWriter(std::ostream &output) : output(output), buffer(0), index(0) {}
         void writeBit(bool bit);

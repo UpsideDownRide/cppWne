@@ -34,3 +34,9 @@
 # vs directories
 .vs/
 .vscode/
+
+# test files
+testFiles/
+
+# Class paper files
+classPaper/

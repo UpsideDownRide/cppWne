@@ -2,7 +2,9 @@
 #include <fstream>
 #include <algorithm>
 #include "huffmanEncoder.h"
+#include "huffmanDecoder.h"
 
+// Funkcja pomocnicza do pobierania opcji wywołania z linii poleceń
 char* getOption (char** begin, char** end, const std::string &option) {
     char **it = std::find(begin, end, option);
     if (it != end && ++it != end) {
@@ -11,13 +13,19 @@ char* getOption (char** begin, char** end, const std::string &option) {
     return 0;
 }
 
+// Funkcja pomocnicza do sprawdzania czy opcja wywołania istnieje
 bool optionExists(char** begin, char** end, const std::string &option) {
     return std::find(begin, end, option) != end;
 }
 
+// Stałe reprezentujące opcje wywołania
 std::string OUTPUT_OPTION = "-o";
 std::string ENCODE_OPTION = "-e";
 std::string DECODE_OPTION = "-d";
+
+// Główna funkcja programu
+// Przetwarza i weryfikuje opcje wywołania programu.
+// W zależności od wybranej opcji wywołuje odpowiednią klasę do kodowania lub dekodowania.
 
 int main(int argc, char** argv) {
     if (argc == 1) {

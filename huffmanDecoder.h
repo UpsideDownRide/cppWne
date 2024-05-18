@@ -24,15 +24,13 @@ class HuffmanDecoder {
 
 class BitReader {
     private:
+        std::istream &input;
         uint8_t buffer;
         uint8_t index;
-        std::istream &input;
-        size_t toProcess;
     public:
         BitReader(std::istream &input);
         bool readBit();
         char readChar();
-        bool done();
 };
 
 #endif // BITREADER_H
