@@ -62,19 +62,44 @@ size_t HuffmanEncoder::getEncodingLength() {
     for (auto pair : this->frequencyMap){
         length += this->codes[pair.first].length() * pair.second;
     }
-    std::cout << "computed length: " << length << std::endl;
     return length;
 }
 
 std::ostream &operator<<(std::ostream &os, const fileHeader &header) {
-    os.write(reinterpret_cast<const char*>(&header.treeLength), sizeof(header.treeLength));
     os.write(reinterpret_cast<const char*>(&header.encodingLength), sizeof(header.encodingLength));
     return os;
 }
 
+void encodeTree(HuffmanNode *current, BitWriter &bitWriter) {
+    if (current == nullptr) {
+        return;
+    }
+    if (current -> character == '\0') {
+        bitWriter.writeBit(0);
+    } else {
+        bitWriter.writeBit(1);
+        bitWriter.writeChar(current -> character);
+    }
+    encodeTree(current -> left, bitWriter);
+    encodeTree(current -> right, bitWriter);
+    return;
+}
+
 void HuffmanEncoder::encode(std::ostream &output) {
-    fileHeader header{0, getEncodingLength()};
+    std::stringstream buffer;
+    uint16_t treeLength;
+    BitWriter bitWriter(buffer);
+    
+    encodeTree(this -> root, bitWriter);
+    bitWriter.flush();
+    buffer.seekg(0, std::ios::end);
+    treeLength = buffer.tellg();
+    buffer.seekg(0, std::ios::beg);
+
+    fileHeader header{getEncodingLength()};
     output << header;
+    output << buffer.rdbuf();
+
     _encode(this -> toEncode, output);
     return;
 }
@@ -100,20 +125,21 @@ void HuffmanEncoder::_encode(const std::string &input, std::ostream &output) {
     return;
 }
 
-
-void HuffmanEncoder::decode(std::istream &input, std::ostream &output) {
-    HuffmanDecoder huffmanDec = HuffmanDecoder(this->root);
-    huffmanDec.decode(input, output);
-}
-
 void BitWriter::writeBit(bool bit) {
     buffer |= (bit << (7 - index));
     if (++index == 8) {
-        output << buffer;
+        output.write(reinterpret_cast<const char*>(&buffer), sizeof(buffer));
         buffer = 0;
         index = 0;
     }
 }
+
+void BitWriter::writeChar(char character) {
+    for (int i = 7; i >= 0; i--) {
+        BitWriter::writeBit((character >> i) & 1);
+    }
+}
+
 void BitWriter::flush() {
     if (index > 0) {
         output << buffer;

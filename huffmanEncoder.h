@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <bitset>
 #include <cmath>
+#include <sstream>
 #include "huffmanDecoder.h"
 #include "fileHeader.h"
 
@@ -45,6 +46,7 @@ class BitWriter {
     public:
         BitWriter(std::ostream &output) : output(output), buffer(0), index(0) {}
         void writeBit(bool bit);
+        void writeChar(char character);
         void flush();
         
 };

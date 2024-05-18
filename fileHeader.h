@@ -4,7 +4,6 @@
 #include <iostream>
 
 struct fileHeader {
-    uint16_t treeLength;
     size_t encodingLength;
 };
 
